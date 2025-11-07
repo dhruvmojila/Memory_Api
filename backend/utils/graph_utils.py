@@ -218,44 +218,44 @@ class GraphitiKnowledgeGraph:
         await self.client.close()
         print("✅ Database connection closed")
 
-if __name__ == "__main__":
-    async def main():
-        kg = GraphitiKnowledgeGraph()
-        await kg.initialize()
+# if __name__ == "__main__":
+#     async def main():
+#         kg = GraphitiKnowledgeGraph()
+#         await kg.initialize()
         
-        result1 = await kg.add_knowledge(
-            text="Apple Inc. reported strong Q4 earnings with revenue of $89.5 billion.",
-            user_id="user_001",
-            category="finance"
-        )
-        print(f"Result 1: {result1}")
+#         result1 = await kg.add_knowledge(
+#             text="Apple Inc. reported strong Q4 earnings with revenue of $89.5 billion.",
+#             user_id="user_001",
+#             category="finance"
+#         )
+#         print(f"Result 1: {result1}")
         
-        # User 1: Health data (different category, isolated)
-        result2 = await kg.add_knowledge(
-            text="Regular exercise improves cardiovascular health and reduces stress.",
-            user_id="user_001",
-            category="health"
-        )
-        print(f"Result 2: {result2}")
+#         # User 1: Health data (different category, isolated)
+#         result2 = await kg.add_knowledge(
+#             text="Regular exercise improves cardiovascular health and reduces stress.",
+#             user_id="user_001",
+#             category="health"
+#         )
+#         print(f"Result 2: {result2}")
         
-        # User 2: Finance data (different user, isolated)
-        result3 = await kg.add_knowledge(
-            text="Tesla's stock price increased by 15% this quarter.",
-            user_id="user_002",
-            category="finance"
-        )
-        print(f"Result 3: {result3}")
+#         # User 2: Finance data (different user, isolated)
+#         result3 = await kg.add_knowledge(
+#             text="Tesla's stock price increased by 15% this quarter.",
+#             user_id="user_002",
+#             category="finance"
+#         )
+#         print(f"Result 3: {result3}")
         
-        # Search user 1's finance knowledge
-        search_results = await kg.search_knowledge(
-            query="earnings revenue",
-            user_id="user_001",
-            category="finance"
-        )
-        print(f"\nSearch results for user_001 finance: {search_results}")
+#         # Search user 1's finance knowledge
+#         search_results = await kg.search_knowledge(
+#             query="earnings revenue",
+#             user_id="user_001",
+#             category="finance"
+#         )
+#         print(f"\nSearch results for user_001 finance: {search_results}")
         
-        # # Clean up
-        await kg.close()
+#         # # Clean up
+#         await kg.close()
     
-    # Run example
-    asyncio.run(main())
+#     # Run example
+#     asyncio.run(main())
