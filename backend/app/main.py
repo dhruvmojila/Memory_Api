@@ -2,7 +2,9 @@ from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 from contextlib import asynccontextmanager
 from services.graph_utils import GraphitiKnowledgeGraph
+from services.dspy_config import setup_dspy
 # from app.routers import memory, query
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -13,6 +15,10 @@ async def lifespan(app: FastAPI):
     await kg_service.initialize()
     app.state.kg_service = kg_service
     print("GraphitiKnowledgeGraph initialized.")
+
+    print("🚀 Initializing DSPY...")
+    setup_dspy()
+    print("DSPY initialized.")
     yield
 
     print("Shutting down...")  
