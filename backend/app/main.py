@@ -4,7 +4,7 @@ from contextlib import asynccontextmanager
 from services.graph_utils import GraphitiKnowledgeGraph
 from services.dspy_config import setup_dspy
 from app.services.dspy_modules import GraphRAGModule
-# from app.routers import memory, query
+from app.routers import memory, query
 
 
 @asynccontextmanager
@@ -34,8 +34,8 @@ app = FastAPI(
     version="1.0", lifespan=lifespan
 )
 
-# app.include_router(memory.router)
-# app.include_router(query.router)
+app.include_router(memory.router)
+app.include_router(query.router)
 
 @app.get("/health", summary="Health Check Endpoint")
 async def health_check():
