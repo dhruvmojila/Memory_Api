@@ -3,6 +3,7 @@ from fastapi.responses import JSONResponse
 from contextlib import asynccontextmanager
 from services.graph_utils import GraphitiKnowledgeGraph
 from services.dspy_config import setup_dspy
+from app.services.dspy_modules import GraphRAGModule
 # from app.routers import memory, query
 
 
@@ -18,6 +19,7 @@ async def lifespan(app: FastAPI):
 
     print("🚀 Initializing DSPY...")
     setup_dspy()
+    app.state.rag_module = GraphRAGModule()
     print("DSPY initialized.")
     yield
 

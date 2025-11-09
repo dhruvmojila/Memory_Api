@@ -1,6 +1,7 @@
 import dspy
 import re
 from services.dspy_signatures import GraphRAGSignature
+from fastapi import Request
 
 class GraphRAGModule(dspy.Module):
     def __init__(self):
@@ -36,3 +37,5 @@ class GraphRAGModule(dspy.Module):
     def inspect_last_prompt(self, n: int = 1):
         dspy.inspect_history(n=n)
     
+def get_rag_module(request: Request) -> GraphRAGModule:
+    return request.app.state.rag_module
