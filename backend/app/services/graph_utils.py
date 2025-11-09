@@ -1,5 +1,6 @@
 import os
 import asyncio
+from fastapi import Request
 from datetime import datetime
 from typing import Optional, Dict, Any, List
 from dotenv import load_dotenv
@@ -218,6 +219,12 @@ class GraphitiKnowledgeGraph:
         await self.client.close()
         print("✅ Database connection closed")
 
+def get_graph_service(request: Request) -> GraphitiKnowledgeGraph:
+    """
+    Dependency injection function to get the shared
+    GraphitiKnowledgeGraph instance from the app state.
+    """
+    return request.app.state.kg_service
 # if __name__ == "__main__":
 #     async def main():
 #         kg = GraphitiKnowledgeGraph()
