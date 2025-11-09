@@ -1,11 +1,8 @@
-import { useState } from "react";
+import React from "react";
+import Dashboard from "./pages/Dashboard";
 
 function App() {
-  return (
-    <>
-      <div className="bg-red-600">Hi</div>
-    </>
-  );
+  return <Dashboard />;
 }
 
 export default App;

@@ -1,0 +1,61 @@
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/Tabs";
+import AddTextForm from "../components/AddTextForm";
+import UploadFileForm from "../components/UploadFileForm";
+import QueryForm from "../components/QueryForm";
+import Settings from "../components/Settings";
+import Help from "../components/Help";
+import Profile from "../components/Profile";
+
+const Dashboard = () => {
+  return (
+    <div className="min-h-screen bg-gray-100 p-4 sm:p-6 lg:p-8">
+      <div className="max-w-5xl mx-auto">
+        <header className="mb-8">
+          <h1 className="text-4xl font-bold text-gray-800 tracking-tight">
+            Memory API Dashboard
+          </h1>
+          <p className="text-lg text-gray-600 mt-2">
+            A modern interface to manage your memory API.
+          </p>
+        </header>
+        <div className="bg-white rounded-lg shadow-lg">
+          <Tabs defaultValue="add-text">
+            <TabsList>
+              <TabsTrigger value="add-text">Add Text</TabsTrigger>
+              <TabsTrigger value="upload-file">Upload File</TabsTrigger>
+              <TabsTrigger value="query-memory">Query Memory</TabsTrigger>
+              <TabsTrigger value="settings">Settings</TabsTrigger>
+              <TabsTrigger value="help">Help</TabsTrigger>
+              <TabsTrigger value="profile">Profile</TabsTrigger>
+            </TabsList>
+            <TabsContent value="add-text">
+              <AddTextForm />
+            </TabsContent>
+            <TabsContent value="upload-file">
+              <UploadFileForm />
+            </TabsContent>
+            <TabsContent value="query-memory">
+              <QueryForm />
+            </TabsContent>
+            <TabsContent value="settings">
+              <Settings />
+            </TabsContent>
+            <TabsContent value="help">
+              <Help />
+            </TabsContent>
+            <TabsContent value="profile">
+              <Profile />
+            </TabsContent>
+          </Tabs>
+        </div>
+        <footer className="text-center mt-8 text-gray-500 text-sm">
+          <p>
+            &copy; {new Date().getFullYear()} Memory API. All rights reserved.
+          </p>
+        </footer>
+      </div>
+    </div>
+  );
+};
+
+export default Dashboard;
