@@ -4,7 +4,7 @@ from app.services.graph_utils import GraphitiKnowledgeGraph, get_graph_service
 from fastapi import File, UploadFile, Form, HTTPException, status
 from typing import Optional
 
-from utils.memory_helpers import parse_file_in_memory
+from app.utils.memory_helpers import parse_file_in_memory
 
 router = APIRouter(
     prefix="/memory",

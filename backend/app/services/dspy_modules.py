@@ -1,6 +1,6 @@
 import dspy
 import re
-from services.dspy_signatures import GraphRAGSignature
+from app.services.dspy_signatures import GraphRAGSignature
 from fastapi import Request
 
 class GraphRAGModule(dspy.Module):

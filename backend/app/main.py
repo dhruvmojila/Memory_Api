@@ -1,8 +1,8 @@
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 from contextlib import asynccontextmanager
-from services.graph_utils import GraphitiKnowledgeGraph
-from services.dspy_config import setup_dspy
+from app.services.graph_utils import GraphitiKnowledgeGraph
+from app.services.dspy_config import setup_dspy
 from app.services.dspy_modules import GraphRAGModule
 from app.routers import memory, query
 from fastapi.middleware.cors import CORSMiddleware
