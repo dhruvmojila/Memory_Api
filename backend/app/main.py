@@ -5,7 +5,7 @@ from services.graph_utils import GraphitiKnowledgeGraph
 from services.dspy_config import setup_dspy
 from app.services.dspy_modules import GraphRAGModule
 from app.routers import memory, query
-
+from fastapi.middleware.cors import CORSMiddleware
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -32,6 +32,21 @@ app = FastAPI(
     title="LLM Memory API",
     description="An API for a scalable, graph-based LLM memory system.", 
     version="1.0", lifespan=lifespan
+)
+
+origins = [
+    "http://localhost",
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "https://example.com", 
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,            
+    allow_credentials=True,
+    allow_methods=["*"],           
+    allow_headers=["*"],            
 )
 
 app.include_router(memory.router)
