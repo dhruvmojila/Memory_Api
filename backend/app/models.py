@@ -1,8 +1,6 @@
 from pydantic import BaseModel
 from typing import List, Dict, Any, Optional
 
-# --- Request Models ---
-
 class MemoryTextInput(BaseModel):
     text: str
     user_id: str
