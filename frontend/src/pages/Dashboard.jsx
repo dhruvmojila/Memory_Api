@@ -5,6 +5,7 @@ import QueryForm from "../components/QueryForm";
 import Settings from "../components/Settings";
 import Help from "../components/Help";
 import Profile from "../components/Profile";
+import GraphVisualizer from "../components/GraphVisualizer";
 
 const Dashboard = () => {
   return (
@@ -24,6 +25,9 @@ const Dashboard = () => {
               <TabsTrigger value="add-text">Add Text</TabsTrigger>
               <TabsTrigger value="upload-file">Upload File</TabsTrigger>
               <TabsTrigger value="query-memory">Query Memory</TabsTrigger>
+              <TabsTrigger value="graph-visualizer">
+                Graph Visualizer
+              </TabsTrigger>
               <TabsTrigger value="settings">Settings (in dev)</TabsTrigger>
               <TabsTrigger value="help">Help (in dev)</TabsTrigger>
               <TabsTrigger value="profile">Profile (in dev)</TabsTrigger>
@@ -36,6 +40,9 @@ const Dashboard = () => {
             </TabsContent>
             <TabsContent value="query-memory">
               <QueryForm />
+            </TabsContent>
+            <TabsContent value="graph-visualizer">
+              <GraphVisualizer />
             </TabsContent>
             <TabsContent value="settings">
               <Settings />

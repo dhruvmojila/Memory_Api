@@ -78,14 +78,24 @@ async def get_graph_visualization(
         RETURN 
             elementId(n) AS id,
             properties(n) AS props,
-            { 
-                label: coalesce(n.name, n.title, n.uuid, 'Node'),
-                ...properties(n)
-            } AS data,
-            { x: rand() * 400, y: rand() * 400 } AS position
+            n.name AS name,
+            n.uuid AS uuid,
+            { x: rand() * 500, y: rand() * 500 } AS position
         """
         result = await session.run(nodes_query, group_id=group_id)
-        nodes = [record.data() for record in await result.list()]
+        
+        async for record in result:
+            data = record.data()
+            # Build the data object with label and all properties
+            node_data = dict(data['props'])  # Copy all properties
+            node_data['label'] = data['name'] or data['title'] or data['uuid'] or 'Node'
+            
+            nodes.append({
+                'id': data['id'],
+                'props': data['props'],
+                'data': node_data,
+                'position': data['position']
+            })
 
         # --- 2️⃣ Edges Query ---
         edges_query = """
@@ -99,6 +109,8 @@ async def get_graph_visualization(
             properties(r) AS props
         """
         result = await session.run(edges_query, group_id=group_id)
-        edges = [record.data() for record in await result.list()]
+        
+        async for record in result:
+            edges.append(record.data())
 
     return GraphResponse(nodes=nodes, edges=edges)

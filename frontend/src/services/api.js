@@ -27,3 +27,15 @@ export const queryRAG = (question, userId, category) => {
     category,
   });
 };
+
+export const getGraphData = (userId, category) => {
+  return axios.get(
+    `/api/query/visualize?user_id=${userId}&category=${category}`
+  );
+};
+
+export const graphUpdateWebSocket = () => {
+  return new WebSocket(
+    `${window.location.origin.replace(/^http/, "ws")}/api/graph/updates`
+  );
+};

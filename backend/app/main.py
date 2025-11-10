@@ -6,6 +6,8 @@ from app.services.dspy_config import setup_dspy
 from app.services.dspy_modules import GraphRAGModule
 from app.routers import memory, query
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi import WebSocket, WebSocketDisconnect
+from app.services.websocket_manager import manager
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -48,6 +50,20 @@ app.add_middleware(
     allow_methods=["*"],           
     allow_headers=["*"],            
 )
+
+@app.websocket("/api/graph/updates")
+async def websocket_endpoint(websocket: WebSocket):
+    """
+    WebSocket endpoint for graph updates.
+    Clients connect here and wait for broadcast messages.
+    """
+    await manager.connect(websocket)
+    try:
+        while True:
+            # Keep the connection alive
+            await websocket.receive_text()
+    except WebSocketDisconnect:
+        manager.disconnect(websocket)
 
 app.include_router(memory.router, prefix="/api")
 app.include_router(query.router, prefix="/api")

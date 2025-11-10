@@ -4,6 +4,7 @@ from app.services.graph_utils import GraphitiKnowledgeGraph, get_graph_service
 from fastapi import File, UploadFile, Form, HTTPException, status
 from typing import Optional
 
+from app.services.websocket_manager import manager as websocket_manager
 from app.utils.memory_helpers import parse_file_in_memory
 
 router = APIRouter(
@@ -25,6 +26,10 @@ async def add_text_memory(
         category=data.category,
         source_description=data.source_description
     )
+
+    if result.get("success"):
+        await websocket_manager.broadcast("graph_updated")
+
     return result
 
 @router.post("/upload", response_model=MemoryAddResponse)
@@ -60,4 +65,8 @@ async def add_file_memory(
         category=category,
         source_description=desc
     )
+    
+    if result.get("success"):
+        await websocket_manager.broadcast("graph_updated")
+
     return result
