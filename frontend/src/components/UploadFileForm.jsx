@@ -3,7 +3,6 @@ import { uploadFileMemory } from "../services/api";
 
 const UploadFileForm = () => {
   const [file, setFile] = useState(null);
-  const [userId, setUserId] = useState("");
   const [category, setCategory] = useState("");
   const [response, setResponse] = useState(null);
   const [error, setError] = useState(null);
@@ -23,7 +22,7 @@ const UploadFileForm = () => {
     }
     setLoading(true);
     try {
-      const res = await uploadFileMemory(file, userId, category);
+      const res = await uploadFileMemory(file, category);
       setResponse(res.data);
     } catch (err) {
       setError(err.response ? err.response.data : "An error occurred");
@@ -49,19 +48,6 @@ const UploadFileForm = () => {
           />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              User ID
-            </label>
-            <input
-              type="text"
-              className="w-full px-4 py-3 text-gray-700 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
-              value={userId}
-              onChange={(e) => setUserId(e.target.value)}
-              placeholder="e.g., user-123"
-              required
-            />
-          </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Category

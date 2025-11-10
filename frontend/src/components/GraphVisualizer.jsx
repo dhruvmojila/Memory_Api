@@ -17,7 +17,6 @@ import "reactflow/dist/style.css";
 import { getGraphData, graphUpdateWebSocket } from "../services/api";
 
 const GraphVisualizer = () => {
-  const [userId, setUserId] = useState("");
   const [category, setCategory] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -83,11 +82,10 @@ const GraphVisualizer = () => {
   }, [edges]);
 
   const fetchGraphData = useCallback(async () => {
-    if (!userId) return;
     setLoading(true);
     setError(null);
     try {
-      const response = await getGraphData(userId, category);
+      const response = await getGraphData(category);
       const data = response.data;
       setNodes(data.nodes || []);
       setEdges(data.edges || []);
@@ -97,17 +95,15 @@ const GraphVisualizer = () => {
     } finally {
       setLoading(false);
     }
-  }, [userId, category, setNodes, setEdges]);
+  }, [category, setNodes, setEdges]);
 
   useEffect(() => {
     fetchGraphDataRef.current = fetchGraphData;
   }, [fetchGraphData]);
 
   useEffect(() => {
-    if (userId) {
-      fetchGraphData();
-    }
-  }, [userId, category, fetchGraphData]);
+    fetchGraphData();
+  }, [category, fetchGraphData]);
 
   useEffect(() => {
     const ws = graphUpdateWebSocket();
@@ -151,19 +147,6 @@ const GraphVisualizer = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         <div>
           <label className="block text-sm font-semibold text-gray-700 mb-2">
-            User ID
-          </label>
-          <input
-            type="text"
-            className="w-full px-4 py-3 text-gray-700 bg-white border-2 border-blue-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 shadow-sm"
-            value={userId}
-            onChange={(e) => setUserId(e.target.value)}
-            placeholder="e.g., user-123"
-            required
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-2">
             Category (Optional)
           </label>
           <input
@@ -178,7 +161,7 @@ const GraphVisualizer = () => {
 
       <button
         onClick={fetchGraphData}
-        disabled={loading || !userId || !category}
+        disabled={loading || !category}
         className="w-full bg-blue-600 text-white font-semibold py-3 px-4 rounded-xl  hover:bg-blue-700 disabled:bg-blue-400 transition duration-300 ease-in-out transform hover:scale-[1.02] hover:shadow-lg mb-6 shadow-md"
       >
         {loading ? "Loading Graph..." : "Load Graph"}
