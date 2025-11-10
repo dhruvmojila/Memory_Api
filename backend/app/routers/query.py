@@ -44,7 +44,7 @@ async def query_rag(
         
         # 4. Respond
         return QueryResponse(
-            answer=result.answer,
+            answer=result,
             retrieved_facts=retrieved_facts
         )
         

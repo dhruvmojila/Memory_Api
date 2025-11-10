@@ -78,7 +78,7 @@ class GraphitiKnowledgeGraph:
     
     async def initialize(self):
         if not self._indices_built:
-            await clear_data(self.client.driver)
+            # await clear_data(self.client.driver)
             await self.client.build_indices_and_constraints()
             self._indices_built = True
             print("✅ Database indices and constraints built successfully")
