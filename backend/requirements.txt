@@ -9,4 +9,6 @@ dspy
 python-docx
 python-multipart               
 graphiti-core[google-genai]                                                  
-graphiti-core[groq]             
+graphiti-core[groq]
+passlib[bcrypt]
+python-jose[cryptography]
