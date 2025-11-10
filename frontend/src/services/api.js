@@ -35,7 +35,15 @@ export const getGraphData = (userId, category) => {
 };
 
 export const graphUpdateWebSocket = () => {
-  return new WebSocket(
+  const ws = new WebSocket(
     `${window.location.origin.replace(/^http/, "ws")}/api/graph/updates`
   );
+
+  ws.onmessage = (event) => {
+    if (event.data === "ping") {
+      ws.send("pong");
+    }
+  };
+
+  return ws;
 };

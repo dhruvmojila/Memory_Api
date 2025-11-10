@@ -8,6 +8,7 @@ from app.routers import memory, query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import WebSocket, WebSocketDisconnect
 from app.services.websocket_manager import manager
+import asyncio
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -60,9 +61,27 @@ async def websocket_endpoint(websocket: WebSocket):
     await manager.connect(websocket)
     try:
         while True:
-            # Keep the connection alive
-            await websocket.receive_text()
-    except WebSocketDisconnect:
+            try:
+                # Wait for messages with a timeout
+                data = await asyncio.wait_for(
+                    websocket.receive_text(), 
+                    timeout=30.0
+                )
+                # Echo back or handle ping messages
+                if data == "ping":
+                    await websocket.send_text("pong")
+            except asyncio.TimeoutError:
+                # Send a ping to keep connection alive
+                try:
+                    await websocket.send_text("ping")
+                except Exception:
+                    # Connection is dead
+                    break
+            except WebSocketDisconnect:
+                break
+    except Exception as e:
+        print(f"WebSocket error: {e}")
+    finally:
         manager.disconnect(websocket)
 
 app.include_router(memory.router, prefix="/api")
