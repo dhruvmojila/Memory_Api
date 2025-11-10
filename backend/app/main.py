@@ -49,8 +49,8 @@ app.add_middleware(
     allow_headers=["*"],            
 )
 
-app.include_router(memory.router)
-app.include_router(query.router)
+app.include_router(memory.router, prefix="/api")
+app.include_router(query.router, prefix="/api")
 
 @app.get("/health", summary="Health Check Endpoint")
 async def health_check():
