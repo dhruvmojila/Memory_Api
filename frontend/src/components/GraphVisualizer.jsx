@@ -224,7 +224,7 @@ const GraphVisualizer = () => {
             <Background variant="dots" gap={16} size={1} color="#cbd5e1" />
           </ReactFlow>
         ) : (
-          <div className="flex items-center justify-center h-full text-gray-500 bg-gradient-to-br from-purple-50 to-blue-50">
+          <div className="flex items-center justify-center h-full text-gray-500 bg-linear-to-br from-purple-50 to-blue-50">
             <div className="text-center">
               <svg
                 className="mx-auto h-16 w-16 text-purple-300 mb-4"
