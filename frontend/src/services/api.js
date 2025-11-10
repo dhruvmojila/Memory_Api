@@ -1,37 +1,63 @@
 import axios from "axios";
 
-export const addTextMemory = (text, userId, category) => {
-  return axios.post(`/api/memory/text`, {
-    text,
-    user_id: userId,
-    category,
-  });
-};
+const api = axios.create({
+  baseURL: "/api",
+});
 
-export const uploadFileMemory = (file, userId, category) => {
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+export const login = (email, password) => {
   const formData = new FormData();
-  formData.append("file", file);
-  formData.append("user_id", userId);
-  formData.append("category", category);
-  return axios.post(`/api/memory/upload`, formData, {
+  formData.append("username", email);
+  formData.append("password", password);
+  return api.post(`/token`, formData, {
     headers: {
       "Content-Type": "multipart/form-data",
     },
   });
 };
 
-export const queryRAG = (question, userId, category) => {
-  return axios.post(`/api/query/rag`, {
-    question,
-    user_id: userId,
+export const signup = (email, password, fullName) => {
+  return api.post(`/users/`, {
+    email,
+    password,
+    full_name: fullName,
+  });
+};
+
+export const addTextMemory = (text, category) => {
+  return api.post(`/memory/text`, {
+    text,
     category,
   });
 };
 
-export const getGraphData = (userId, category) => {
-  return axios.get(
-    `/api/query/visualize?user_id=${userId}&category=${category}`
-  );
+export const uploadFileMemory = (file, category) => {
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("category", category);
+  return api.post(`/memory/upload`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+};
+
+export const queryRAG = (question, category) => {
+  return api.post(`/query/rag`, {
+    question,
+    category,
+  });
+};
+
+export const getGraphData = (category) => {
+  return api.get(`/query/visualize?category=${category}`);
 };
 
 export const graphUpdateWebSocket = () => {
