@@ -57,14 +57,13 @@ async def query_rag(
 @router.get("/visualize", response_model=GraphResponse)
 async def get_graph_visualization(
     user_id: str,
-    category: str,
+    category: str = None,
     kg: GraphitiKnowledgeGraph = Depends(get_graph_service)
 ):
     """
     Fetch the entire user/category graph formatted for React Flow.
     Each node includes its metadata to support interactive visualization.
     """
-    group_id = f"user_{user_id}_{category}"
     driver: AsyncDriver = kg.client.driver
 
     nodes = []
@@ -72,17 +71,32 @@ async def get_graph_visualization(
 
     async with driver.session() as session:
         # --- 1️⃣ Nodes Query ---
-        nodes_query = """
-        MATCH (n:Entity)
-        WHERE n.group_id = $group_id
-        RETURN 
-            elementId(n) AS id,
-            properties(n) AS props,
-            n.name AS name,
-            n.uuid AS uuid,
-            { x: rand() * 500, y: rand() * 500 } AS position
-        """
-        result = await session.run(nodes_query, group_id=group_id)
+        if category:
+            group_id = f"user_{user_id}_{category}"
+            nodes_query = """
+            MATCH (n:Entity)
+            WHERE n.group_id = $group_id
+            RETURN 
+                elementId(n) AS id,
+                properties(n) AS props,
+                n.name AS name,
+                n.uuid AS uuid,
+                { x: rand() * 500, y: rand() * 500 } AS position
+            """
+            result = await session.run(nodes_query, group_id=group_id)
+        else:
+            prefix = f"user_{user_id}_"
+            nodes_query = """
+            MATCH (n:Entity)
+            WHERE n.group_id IS NOT NULL AND n.group_id STARTS WITH $prefix
+            RETURN DISTINCT
+                elementId(n) AS id,
+                properties(n) AS props,
+                n.name AS name,
+                n.uuid AS uuid,
+                { x: rand() * 500, y: rand() * 500 } AS position
+            """
+            result = await session.run(nodes_query, prefix=prefix)
         
         async for record in result:
             data = record.data()
@@ -97,19 +111,38 @@ async def get_graph_visualization(
                 'position': data['position']
             })
 
-        # --- 2️⃣ Edges Query ---
-        edges_query = """
-        MATCH (s:Entity)-[r]->(t:Entity)
-        WHERE s.group_id = $group_id AND t.group_id = $group_id
-        RETURN 
-            elementId(r) AS id,
-            elementId(s) AS source,
-            elementId(t) AS target,
-            type(r) AS label,
-            properties(r) AS props
-        """
-        result = await session.run(edges_query, group_id=group_id)
-        
+        if category:
+            group_id = f"user_{user_id}_{category}"
+
+            edges_query = """
+            MATCH (s:Entity)-[r]->(t:Entity)
+            WHERE s.group_id = $group_id AND t.group_id = $group_id
+            RETURN 
+                elementId(r) AS id,
+                elementId(s) AS source,
+                elementId(t) AS target,
+                type(r) AS label,
+                properties(r) AS props
+            """
+            result = await session.run(edges_query, group_id=group_id)
+        else:
+            prefix = f"user_{user_id}_"
+            edges_query = """
+            MATCH (s:Entity)-[r]->(t:Entity)
+            WHERE s.group_id IS NOT NULL
+              AND s.group_id STARTS WITH $prefix
+              AND t.group_id IS NOT NULL
+              AND t.group_id STARTS WITH $prefix
+              AND s.group_id = t.group_id
+            RETURN DISTINCT
+                elementId(r) AS id,
+                elementId(s) AS source,
+                elementId(t) AS target,
+                type(r) AS label,
+                properties(r) AS props
+            """
+            result = await session.run(edges_query, prefix=prefix)
+
         async for record in result:
             edges.append(record.data())
 

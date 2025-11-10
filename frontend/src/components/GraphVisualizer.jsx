@@ -83,7 +83,7 @@ const GraphVisualizer = () => {
   }, [edges]);
 
   const fetchGraphData = useCallback(async () => {
-    if (!userId || !category) return;
+    if (!userId) return;
     setLoading(true);
     setError(null);
     try {
@@ -104,7 +104,7 @@ const GraphVisualizer = () => {
   }, [fetchGraphData]);
 
   useEffect(() => {
-    if (userId && category) {
+    if (userId) {
       fetchGraphData();
     }
   }, [userId, category, fetchGraphData]);
@@ -164,7 +164,7 @@ const GraphVisualizer = () => {
         </div>
         <div>
           <label className="block text-sm font-semibold text-gray-700 mb-2">
-            Category
+            Category (Optional)
           </label>
           <input
             type="text"
@@ -172,7 +172,6 @@ const GraphVisualizer = () => {
             value={category}
             onChange={(e) => setCategory(e.target.value)}
             placeholder="e.g., work, personal"
-            required
           />
         </div>
       </div>
