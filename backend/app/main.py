@@ -4,11 +4,15 @@ from contextlib import asynccontextmanager
 from app.services.graph_utils import GraphitiKnowledgeGraph
 from app.services.dspy_config import setup_dspy
 from app.services.dspy_modules import GraphRAGModule
-from app.routers import memory, query
+from app.routers import memory, query, auth
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import WebSocket, WebSocketDisconnect
 from app.services.websocket_manager import manager
 import asyncio
+from .database import engine
+from . import db_models
+
+db_models.Base.metadata.create_all(bind=engine)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -84,6 +88,7 @@ async def websocket_endpoint(websocket: WebSocket):
     finally:
         manager.disconnect(websocket)
 
+app.include_router(auth.router, prefix="/api")
 app.include_router(memory.router, prefix="/api")
 app.include_router(query.router, prefix="/api")
 
