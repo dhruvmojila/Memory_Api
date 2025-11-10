@@ -1,16 +1,30 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 from typing import List, Dict, Any, Optional
 
 class MemoryTextInput(BaseModel):
     text: str
-    user_id: str
     category: str
     source_description: Optional[str] = None
 
 class QueryInput(BaseModel):
     question: str
-    user_id: str
     category: Optional[str] = None
+
+class UserCreate(BaseModel):
+    email: EmailStr
+    password: str
+    full_name: Optional[str] = None
+
+class User(BaseModel):
+    id: int
+    email: EmailStr
+    full_name: Optional[str] = None
+    class Config:
+        orm_mode = True
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
 
 # --- Response Models ---
 

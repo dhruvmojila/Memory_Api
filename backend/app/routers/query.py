@@ -1,9 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException
-from app.models import QueryInput, QueryResponse
+from app.models import QueryInput, QueryResponse, User
 from app.services.graph_utils import GraphitiKnowledgeGraph, get_graph_service
 from app.services.dspy_modules import get_rag_module, GraphRAGModule
 from neo4j import AsyncDriver
 from app.models import GraphResponse
+from ..utils.auth import get_current_user
 
 router = APIRouter(
     prefix="/query",
@@ -14,7 +15,8 @@ router = APIRouter(
 async def query_rag(
     data: QueryInput,
     kg: GraphitiKnowledgeGraph = Depends(get_graph_service),
-    rag_module: GraphRAGModule = Depends(get_rag_module)
+    rag_module: GraphRAGModule = Depends(get_rag_module),
+    current_user: User = Depends(get_current_user)
 ):
     """
     Query the memory graph using a RAG pipeline.
@@ -25,7 +27,7 @@ async def query_rag(
         # 1. Retrieve: Get facts from the knowledge graph
         search_result = await kg.search_knowledge(
             query=data.question,
-            user_id=data.user_id,
+            user_id=str(current_user.id),
             category=data.category
         )
         
@@ -56,15 +58,16 @@ async def query_rag(
 
 @router.get("/visualize", response_model=GraphResponse)
 async def get_graph_visualization(
-    user_id: str,
     category: str = None,
-    kg: GraphitiKnowledgeGraph = Depends(get_graph_service)
+    kg: GraphitiKnowledgeGraph = Depends(get_graph_service),
+    current_user: User = Depends(get_current_user)
 ):
     """
     Fetch the entire user/category graph formatted for React Flow.
     Each node includes its metadata to support interactive visualization.
     """
     driver: AsyncDriver = kg.client.driver
+    user_id = str(current_user.id)
 
     nodes = []
     edges = []

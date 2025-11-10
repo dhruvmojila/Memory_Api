@@ -1,11 +1,12 @@
 from fastapi import APIRouter, Depends
-from app.models import MemoryTextInput, MemoryAddResponse
+from app.models import MemoryTextInput, MemoryAddResponse, User
 from app.services.graph_utils import GraphitiKnowledgeGraph, get_graph_service
 from fastapi import File, UploadFile, Form, HTTPException, status
 from typing import Optional
 
 from app.services.websocket_manager import manager as websocket_manager
 from app.utils.memory_helpers import parse_file_in_memory
+from ..utils.auth import get_current_user
 
 router = APIRouter(
     prefix="/memory",
@@ -15,14 +16,15 @@ router = APIRouter(
 @router.post("/text", response_model=MemoryAddResponse)
 async def add_text_memory(
     data: MemoryTextInput,
-    kg: GraphitiKnowledgeGraph = Depends(get_graph_service)
+    kg: GraphitiKnowledgeGraph = Depends(get_graph_service),
+    current_user: User = Depends(get_current_user)
 ):
     """
     Add a raw text snippet to the knowledge graph.
     """
     result = await kg.add_knowledge(
         text=data.text,
-        user_id=data.user_id,
+        user_id=str(current_user.id),
         category=data.category,
         source_description=data.source_description
     )
@@ -35,10 +37,10 @@ async def add_text_memory(
 @router.post("/upload", response_model=MemoryAddResponse)
 async def add_file_memory(
     file: UploadFile = File(...),
-    user_id: str = Form(...),
     category: str = Form(...),
     source_description: Optional[str] = Form(None),
-    kg: GraphitiKnowledgeGraph = Depends(get_graph_service)
+    kg: GraphitiKnowledgeGraph = Depends(get_graph_service),
+    current_user: User = Depends(get_current_user)
 ):
     """
     Upload a file (PDF, DOCX, TXT), parse it in memory,
@@ -61,7 +63,7 @@ async def add_file_memory(
     # Add the extracted text to the knowledge graph
     result = await kg.add_knowledge(
         text=parsed_text,
-        user_id=user_id,
+        user_id=str(current_user.id),
         category=category,
         source_description=desc
     )
