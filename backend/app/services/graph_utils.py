@@ -163,7 +163,7 @@ class GraphitiKnowledgeGraph:
         self,
         query: str,
         user_id: str,
-        category: str,
+        category: str = None,
         num_results: int = 10
     ) -> Dict[str, Any]:
         """
@@ -178,12 +178,18 @@ class GraphitiKnowledgeGraph:
         Returns:
             Search results with relevant facts and relationships
         """
-        group_id = f"user_{user_id}_{category}"
+        if category:
+            group_ids = [f"user_{user_id}_{category}"]
+        else:
+            group_ids = await self._get_group_ids_for_user(user_id)
         
+        if not group_ids:
+            return {"success": True, "group_ids": group_ids, "query": query, "num_results": 0, "facts": []}
+
         try:
             results = await self.client.search(
                 query=query,
-                group_ids=[group_id], 
+                group_ids=group_ids, 
                 num_results=num_results
             )
             
@@ -201,7 +207,7 @@ class GraphitiKnowledgeGraph:
             
             return {
                 "success": True,
-                "group_id": group_id,
+                "group_id": group_ids,
                 "query": query,
                 "num_results": len(facts),
                 "facts": facts
@@ -210,7 +216,7 @@ class GraphitiKnowledgeGraph:
         except Exception as e:
             return {
                 "success": False,
-                "group_id": group_id,
+                "group_id": group_ids,
                 "error": str(e)
             }
     
@@ -218,6 +224,41 @@ class GraphitiKnowledgeGraph:
         """Close the database connection."""
         await self.client.close()
         print("✅ Database connection closed")
+
+    async def _get_group_ids_for_user(self, user_id: str) -> List[str]:
+        """
+        Query Neo4j for distinct group_id values for this user.
+        Returns something like ["user_1_Job", "user_1_personal", ...]
+        """
+        prefix = f"user_{user_id}_"
+        # Try to use the driver's execute_query helper if present (docs show it exists)
+        try:
+            records, _, _ = await self.client.driver.execute_query(
+                """
+                MATCH (n)
+                WHERE n.group_id IS NOT NULL AND n.group_id STARTS WITH $prefix
+                RETURN DISTINCT n.group_id AS group_id
+                """,
+                prefix=prefix,
+            )
+            return [r["group_id"] for r in records]
+        except AttributeError:
+            # Fallback to a regular session.run for drivers without execute_query helper
+            group_ids = []
+            async with self.client.driver.session() as session:
+                result = await session.run(
+                    """
+                    MATCH (n)
+                    WHERE n.group_id IS NOT NULL AND n.group_id STARTS WITH $prefix
+                    RETURN DISTINCT n.group_id AS group_id
+                    """,
+                    prefix=prefix,
+                )
+                records = await result.list()
+                for rec in records:
+                    # rec is a Record; rec["group_id"] extracts the value
+                    group_ids.append(rec["group_id"])
+            return group_ids
 
 def get_graph_service(request: Request) -> GraphitiKnowledgeGraph:
     """

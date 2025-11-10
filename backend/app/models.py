@@ -10,7 +10,7 @@ class MemoryTextInput(BaseModel):
 class QueryInput(BaseModel):
     question: str
     user_id: str
-    category: str
+    category: Optional[str] = None
 
 # --- Response Models ---
 

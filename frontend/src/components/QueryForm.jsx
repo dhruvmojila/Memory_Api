@@ -58,7 +58,7 @@ const QueryForm = () => {
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Category
+              Category (Optional)
             </label>
             <input
               type="text"
@@ -66,7 +66,6 @@ const QueryForm = () => {
               value={category}
               onChange={(e) => setCategory(e.target.value)}
               placeholder="e.g., work, personal"
-              required
             />
           </div>
         </div>
